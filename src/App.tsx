@@ -161,6 +161,14 @@ export default function App() {
     await refreshAll();
   };
 
+  const handleCenterPlusClick = () => {
+    if (activeTab === 'LIVE_BIDS') {
+      setIsNewBidDrawerOpen(true);
+    } else {
+      handleOpenNewItem();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* Mobile Top Header (clean, with Settings gear, no duplicate Add button) */}
@@ -248,7 +256,7 @@ export default function App() {
         onChangeTab={(tab) => setActiveTab(tab)}
         inventoryCount={items.length}
         activeBidsCount={activeBidsCount}
-        onOpenNewItem={handleOpenNewItem}
+        onOpenNewItem={handleCenterPlusClick}
       />
 
       {/* Slide-up Bottom Sheets */}

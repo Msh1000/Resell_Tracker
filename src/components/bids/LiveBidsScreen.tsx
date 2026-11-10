@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Bid, BidStatus, AppSettings } from '../../types';
-import { formatZAR, formatPercent } from '../../lib/calculator';
+import type { Bid, BidStatus, AppSettings } from '../../types';
+import { formatZAR } from '../../lib/calculator';
 import {
   Gavel,
   Plus,
@@ -10,8 +10,6 @@ import {
   Trash2,
   PackageCheck,
   Check,
-  Zap,
-  TrendingUp,
 } from 'lucide-react';
 import { NewBidDrawer } from './NewBidDrawer';
 
@@ -76,7 +74,7 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
   };
 
   return (
-    <div className="space-y-3 pb-24">
+    <div className="space-y-3 pb-28">
       {/* Toast Alert */}
       {toastMsg && (
         <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs font-semibold flex items-center gap-2 shadow-lg animate-in slide-in-from-top">
@@ -85,49 +83,48 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
         </div>
       )}
 
-      {/* Filter Tabs & New Bid Pill */}
-      <div className="flex items-center justify-between gap-1.5">
-        <div className="flex gap-1 overflow-x-auto text-xs font-semibold no-scrollbar">
-          {(['ACTIVE', 'WON', 'LOST', 'ALL'] as const).map((st) => {
-            const isActive = filter === st;
-            let count = bids.length;
-            if (st === 'ACTIVE') count = activeCount;
-            if (st === 'WON') count = wonCount;
-            if (st === 'LOST') count = lostCount;
+      {/* 1. Full-width Filter Tabs */}
+      <div className="flex gap-1.5 overflow-x-auto pb-0.5 text-xs font-semibold no-scrollbar">
+        {(['ACTIVE', 'WON', 'LOST', 'ALL'] as const).map((st) => {
+          const isActive = filter === st;
+          let count = bids.length;
+          if (st === 'ACTIVE') count = activeCount;
+          if (st === 'WON') count = wonCount;
+          if (st === 'LOST') count = lostCount;
 
-            return (
-              <button
-                key={st}
-                onClick={() => setFilter(st)}
-                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 min-h-[36px] ${
-                  isActive
-                    ? 'bg-amber-600 text-white font-bold shadow-sm shadow-amber-500/20'
-                    : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+          return (
+            <button
+              key={st}
+              onClick={() => setFilter(st)}
+              className={`px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 min-h-[36px] whitespace-nowrap ${
+                isActive
+                  ? 'bg-amber-600 text-white font-bold shadow-sm shadow-amber-500/20'
+                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+              }`}
+            >
+              <span>{st}</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'
                 }`}
               >
-                <span>{st}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'
-                  }`}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          onClick={() => setIsNewBidDrawerOpen(true)}
-          className="py-1.5 px-3 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl flex items-center gap-1 shadow-sm shadow-amber-500/20 active:scale-95 transition flex-shrink-0 min-h-[36px]"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Bid</span>
-        </button>
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Bids List */}
+      {/* 2. Prominent Clean New Bid Action Card */}
+      <button
+        onClick={() => setIsNewBidDrawerOpen(true)}
+        className="w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition active:scale-[0.99] shadow-sm min-h-[44px]"
+      >
+        <Plus className="w-4 h-4 stroke-[2.5]" />
+        <span>Track New Auction Lot</span>
+      </button>
+
+      {/* 3. Bids List */}
       {filteredBids.length === 0 ? (
         <div className="py-12 text-center text-slate-500 space-y-3 bg-slate-900/40 rounded-2xl border border-slate-800/60 p-6">
           <Gavel className="w-10 h-10 mx-auto text-slate-600" />
@@ -323,4 +320,3 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
     </div>
   );
 };
-
