@@ -43,7 +43,8 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
   // Active inventory metrics
   const inStockItems = items.filter((i) => i.status === 'IN_STOCK');
   const listedItems = items.filter((i) => i.status === 'LISTED');
-  const activeStock = [...inStockItems, ...listedItems];
+  const awaitingStockItems = items.filter((i) => i.status === 'AWAITING_STOCK');
+  const activeStock = [...inStockItems, ...listedItems, ...awaitingStockItems];
   const capitalInStock = activeStock.reduce((acc, curr) => acc + (curr.calculatedLandedCost || 0), 0);
 
   // Projected profit on listed items

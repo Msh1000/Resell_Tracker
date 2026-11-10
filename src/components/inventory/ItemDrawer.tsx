@@ -205,6 +205,7 @@ export const ItemDrawer: React.FC<ItemDrawerProps> = ({
               >
                 <option value="IN_STOCK">IN STOCK</option>
                 <option value="LISTED">LISTED</option>
+                <option value="AWAITING_STOCK">AWAITING STOCK</option>
                 <option value="SOLD">SOLD</option>
                 <option value="RETURNED">RETURNED</option>
                 <option value="SCRAPPED">SCRAPPED</option>

@@ -1,4 +1,4 @@
-export type ItemStatus = 'IN_STOCK' | 'LISTED' | 'SOLD' | 'RETURNED' | 'SCRAPPED';
+export type ItemStatus = 'IN_STOCK' | 'LISTED' | 'AWAITING_STOCK' | 'SOLD' | 'RETURNED' | 'SCRAPPED';
 
 export type VatMode = 'STANDARD' | 'COMMISSION_ONLY' | 'EXEMPT';
 

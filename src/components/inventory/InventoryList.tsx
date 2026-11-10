@@ -34,14 +34,19 @@ export const InventoryList: React.FC<InventoryListProps> = ({
       ALL: items.length,
       IN_STOCK: items.filter((i) => i.status === 'IN_STOCK').length,
       LISTED: items.filter((i) => i.status === 'LISTED').length,
+      AWAITING_STOCK: items.filter((i) => i.status === 'AWAITING_STOCK').length,
       SOLD: items.filter((i) => i.status === 'SOLD').length,
       RETURNED: items.filter((i) => i.status === 'RETURNED').length,
     };
   }, [items]);
 
-  // Filtered items
+  // Helper to determine if an item is unsold (active stock)
+  const isUnsold = (status: ItemStatus) =>
+    status === 'IN_STOCK' || status === 'LISTED' || status === 'AWAITING_STOCK';
+
+  // Filtered and sorted items: always show unsold items on top!
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    const list = items.filter((item) => {
       // Status filter
       if (statusFilter !== 'ALL' && item.status !== statusFilter) {
         return false;
@@ -56,6 +61,20 @@ export const InventoryList: React.FC<InventoryListProps> = ({
       }
       return true;
     });
+
+    // Priority sorting: Unsold items on top!
+    return list.sort((a, b) => {
+      const aUnsold = isUnsold(a.status);
+      const bUnsold = isUnsold(b.status);
+
+      if (aUnsold && !bUnsold) return -1;
+      if (!aUnsold && bUnsold) return 1;
+
+      // Within the same group, sort newest first by date
+      const dateA = new Date(a.purchaseDate || a.createdAt).getTime();
+      const dateB = new Date(b.purchaseDate || b.createdAt).getTime();
+      return dateB - dateA;
+    });
   }, [items, statusFilter, searchQuery]);
 
   // Color helper for status badges
@@ -65,6 +84,8 @@ export const InventoryList: React.FC<InventoryListProps> = ({
         return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'LISTED':
         return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      case 'AWAITING_STOCK':
+        return 'bg-purple-500/10 text-purple-300 border-purple-500/20';
       case 'SOLD':
         return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       case 'RETURNED':
@@ -98,7 +119,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
       {/* Horizontal Filter Scroll Bar */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-semibold">
-        {(['ALL', 'IN_STOCK', 'LISTED', 'SOLD', 'RETURNED'] as const).map((st) => {
+        {(['ALL', 'IN_STOCK', 'LISTED', 'AWAITING_STOCK', 'SOLD', 'RETURNED'] as const).map((st) => {
           const isActive = statusFilter === st;
           const count = counts[st] ?? 0;
           return (
@@ -111,7 +132,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                   : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
               }`}
             >
-              <span>{st.replace('_', ' ')}</span>
+              <span>{st.replace(/_/g, ' ')}</span>
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                   isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'
@@ -172,7 +193,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                       item.status
                     )}`}
                   >
-                    {item.status.replace('_', ' ')}
+                    {item.status.replace(/_/g, ' ')}
                   </span>
                 </div>
 
