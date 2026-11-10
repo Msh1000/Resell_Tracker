@@ -146,3 +146,4 @@ export function formatPercent(val: number | null | undefined): string {
   if (val === null || val === undefined || isNaN(val)) return '0.0%';
   return `${val >= 0 ? '+' : ''}${val.toFixed(1)}%`;
 }
+

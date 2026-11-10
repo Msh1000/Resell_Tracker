@@ -1,17 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Item, ItemStatus, AppSettings } from '../../types';
+import type { Item, ItemStatus, AppSettings } from '../../types';
 import { formatZAR, formatPercent } from '../../lib/calculator';
 import {
   Search,
   Plus,
-  Filter,
-  CheckCircle,
-  Tag,
   Package,
   Check,
-  Calendar,
-  Layers,
-  Sparkles,
 } from 'lucide-react';
 
 interface InventoryListProps {
@@ -81,7 +75,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
   };
 
   return (
-    <div className="space-y-3 pb-20">
+    <div className="space-y-3 pb-28">
       {/* Search Input Bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -216,21 +210,22 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                   </div>
                 </div>
 
-                {/* Bottom Actions Row */}
+                {/* Bottom Actions Row: Green tick button for marking sold */}
                 <div className="flex items-center justify-between pt-1">
                   <div className="text-[10px] font-mono text-slate-400">
                     Margin: <span className={margin >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>{formatPercent(margin)}</span>
                     {item.notes && <span className="text-slate-500 ml-2 truncate max-w-[120px] inline-block align-bottom">&bull; {item.notes}</span>}
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     {!isSold && (
                       <button
                         onClick={() => onQuickMarkSold(item)}
-                        className="py-1 px-2.5 rounded-lg bg-emerald-600/15 hover:bg-emerald-600/25 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95"
+                        title="Mark as Sold"
+                        aria-label="Mark as Sold"
+                        className="w-8 h-8 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 flex items-center justify-center transition active:scale-90"
                       >
-                        <Check className="w-3 h-3 stroke-[3]" />
-                        <span>Mark Sold</span>
+                        <Check className="w-4 h-4 stroke-[3]" />
                       </button>
                     )}
 

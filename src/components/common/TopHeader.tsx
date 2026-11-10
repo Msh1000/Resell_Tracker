@@ -1,21 +1,15 @@
 import React from 'react';
-import { Gavel, Settings, Plus, Sparkles } from 'lucide-react';
+import { Gavel, Settings } from 'lucide-react';
 import { formatZAR } from '../../lib/calculator';
 
 interface TopHeaderProps {
   totalProfit: number;
   onOpenSettings: () => void;
-  onOpenNewItem: () => void;
-  onOpenNewBid?: () => void;
-  activeTab: string;
 }
 
 export const TopHeader: React.FC<TopHeaderProps> = ({
   totalProfit,
   onOpenSettings,
-  onOpenNewItem,
-  onOpenNewBid,
-  activeTab,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 pt-safe pb-2.5">
@@ -38,24 +32,15 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           </div>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={onOpenSettings}
-            aria-label="Settings"
-            className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 active:scale-95 transition"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={activeTab === 'LIVE_BIDS' && onOpenNewBid ? onOpenNewBid : onOpenNewItem}
-            className="h-9 px-3 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shadow-blue-500/30 active:scale-95 transition cursor-pointer"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>{activeTab === 'LIVE_BIDS' ? 'New Bid' : 'Add Item'}</span>
-          </button>
-        </div>
+        {/* Right Action: Settings / Config Icon only (no duplicate add button) */}
+        <button
+          onClick={onOpenSettings}
+          aria-label="Settings"
+          title="Auction & Bob Shop Presets"
+          className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 active:scale-95 transition hover:text-white hover:border-slate-700"
+        >
+          <Settings className="w-4 h-4" />
+        </button>
       </div>
     </header>
   );

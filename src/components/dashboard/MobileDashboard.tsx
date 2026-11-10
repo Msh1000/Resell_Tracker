@@ -278,3 +278,4 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
     </div>
   );
 };
+

@@ -168,3 +168,4 @@ export const QuickSoldDrawer: React.FC<QuickSoldDrawerProps> = ({
     </BottomSheet>
   );
 };
+

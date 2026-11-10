@@ -40,3 +40,4 @@ export const AUCTION_HOUSES = [
   'Alliance Auctions',
   'Private Seller',
 ];
+

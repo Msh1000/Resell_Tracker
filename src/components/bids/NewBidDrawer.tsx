@@ -186,3 +186,4 @@ export const NewBidDrawer: React.FC<NewBidDrawerProps> = ({
     </BottomSheet>
   );
 };
+

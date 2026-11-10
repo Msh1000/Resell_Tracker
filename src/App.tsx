@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Item, Bid, AppSettings, BidStatus, ResellBackupData } from './types';
+import type { Item, Bid, AppSettings, BidStatus, ResellBackupData } from './types';
 import { DEFAULT_SETTINGS } from './lib/constants';
 import {
   getItems,
@@ -163,13 +163,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Mobile Top Header */}
+      {/* Mobile Top Header (clean, with Settings gear, no duplicate Add button) */}
       <TopHeader
         totalProfit={totalProfit}
         onOpenSettings={() => setActiveTab('SETTINGS')}
-        onOpenNewItem={handleOpenNewItem}
-        onOpenNewBid={() => setIsNewBidDrawerOpen(true)}
-        activeTab={activeTab}
       />
 
       {/* Main View Area */}
@@ -245,15 +242,16 @@ export default function App() {
         )}
       </main>
 
-      {/* Mobile Bottom Navigation Bar */}
+      {/* Mobile Bottom Navigation Bar: Dash | Stock | (+) | Bids | Calc */}
       <BottomNav
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab)}
         inventoryCount={items.length}
         activeBidsCount={activeBidsCount}
+        onOpenNewItem={handleOpenNewItem}
       />
 
-      {/* Drawers */}
+      {/* Slide-up Bottom Sheets */}
       <ItemDrawer
         isOpen={isItemDrawerOpen}
         onClose={() => {

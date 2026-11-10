@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Package, Gavel, Zap, SlidersHorizontal } from 'lucide-react';
+import { LayoutDashboard, Package, Gavel, Zap, Plus } from 'lucide-react';
 
 export type TabType = 'DASHBOARD' | 'INVENTORY' | 'LIVE_BIDS' | 'CALCULATOR' | 'SETTINGS';
 
@@ -8,6 +8,7 @@ interface BottomNavProps {
   onChangeTab: (tab: TabType) => void;
   inventoryCount: number;
   activeBidsCount: number;
+  onOpenNewItem: () => void;
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({
@@ -15,11 +16,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onChangeTab,
   inventoryCount,
   activeBidsCount,
+  onOpenNewItem,
 }) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 px-2 pt-1 pb-safe shadow-2xl">
       <div className="max-w-md mx-auto grid grid-cols-5 gap-1 items-center">
-        {/* Dashboard */}
+        {/* 1. Dashboard */}
         <button
           onClick={() => onChangeTab('DASHBOARD')}
           className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition ${
@@ -32,7 +34,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <span className="text-[10px] tracking-tight">Dash</span>
         </button>
 
-        {/* Inventory */}
+        {/* 2. Inventory / Stock */}
         <button
           onClick={() => onChangeTab('INVENTORY')}
           className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition relative ${
@@ -52,7 +54,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <span className="text-[10px] tracking-tight">Stock</span>
         </button>
 
-        {/* Live Bids */}
+        {/* 3. CENTER RAISED (+) BUTTON */}
+        <div className="flex justify-center items-center">
+          <button
+            onClick={onOpenNewItem}
+            aria-label="Add Item"
+            className="w-12 h-12 -mt-5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/40 active:scale-95 transition"
+          >
+            <Plus className="w-6 h-6 stroke-[2.5]" />
+          </button>
+        </div>
+
+        {/* 4. Live Bids */}
         <button
           onClick={() => onChangeTab('LIVE_BIDS')}
           className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition relative ${
@@ -72,7 +85,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <span className="text-[10px] tracking-tight">Bids</span>
         </button>
 
-        {/* Calculator */}
+        {/* 5. Calculator */}
         <button
           onClick={() => onChangeTab('CALCULATOR')}
           className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition ${
@@ -83,19 +96,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         >
           <Zap className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">Calc</span>
-        </button>
-
-        {/* Settings */}
-        <button
-          onClick={() => onChangeTab('SETTINGS')}
-          className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition ${
-            activeTab === 'SETTINGS'
-              ? 'text-slate-100 bg-slate-800 font-bold'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <SlidersHorizontal className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] tracking-tight">Config</span>
         </button>
       </div>
     </nav>

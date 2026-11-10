@@ -323,3 +323,4 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
     </div>
   );
 };
+
