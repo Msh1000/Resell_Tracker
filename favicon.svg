@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="128" fill="#0c1322"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#3b82f6" stroke-opacity="0.3" stroke-width="8"/>
+  <path d="M140 372 L230 282 L200 252 L110 342 Z" fill="#f59e0b"/>
+  <path d="M220 262 L250 232 L220 202 L190 232 Z" fill="#fbbf24"/>
+  <path d="M360 120 L270 210 L300 240 L390 150 Z" fill="#3b82f6"/>
+  <path d="M370 190 L410 150 L350 90 L310 130 Z" fill="#60a5fa"/>
+  <path d="M250 290 L290 250 L350 310 L310 350 Z" fill="#10b981"/>
+  <circle cx="370" cy="370" r="45" fill="#10b981"/>
+  <text x="370" y="386" font-family="-apple-system, sans-serif" font-size="44" font-weight="900" fill="#ffffff" text-anchor="middle">R</text>
+</svg>
