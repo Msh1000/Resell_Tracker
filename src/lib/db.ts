@@ -285,6 +285,25 @@ export async function saveBid(data: Partial<Bid>): Promise<Bid> {
   };
 
   await db.put('bids', bidToSave);
+
+  // If this bid was already won and linked to an inventory item, keep the inventory item in sync
+  if (bidToSave.itemId) {
+    const linkedItem = await db.get('items', bidToSave.itemId);
+    if (linkedItem) {
+      await saveItem({
+        id: linkedItem.id,
+        name: bidToSave.name,
+        hammerPrice: bidToSave.hammerPrice,
+        buyerFeePercent: bidToSave.buyerFeePercent,
+        vatMode: bidToSave.vatMode,
+        vatPercent: bidToSave.vatPercent,
+        inboundOtherCost: bidToSave.inboundOtherCost,
+        targetSalePrice: bidToSave.expectedSalePrice,
+        notes: bidToSave.notes ? `Won from live bid: ${bidToSave.notes}` : linkedItem.notes,
+      });
+    }
+  }
+
   return bidToSave;
 }
 

@@ -44,7 +44,8 @@ export default function App() {
   const [isQuickSoldOpen, setIsQuickSoldOpen] = useState(false);
   const [quickSoldTargetItem, setQuickSoldTargetItem] = useState<Item | null>(null);
 
-  const [isNewBidDrawerOpen, setIsNewBidDrawerOpen] = useState(false);
+  const [isBidDrawerOpen, setIsBidDrawerOpen] = useState(false);
+  const [editingBid, setEditingBid] = useState<Bid | null>(null);
 
   // Load data from IndexedDB
   const refreshAll = useCallback(async () => {
@@ -163,7 +164,8 @@ export default function App() {
 
   const handleCenterPlusClick = () => {
     if (activeTab === 'LIVE_BIDS') {
-      setIsNewBidDrawerOpen(true);
+      setEditingBid(null);
+      setIsBidDrawerOpen(true);
     } else {
       handleOpenNewItem();
     }
@@ -194,7 +196,11 @@ export default function App() {
                 onNavigateTab={(tab) => setActiveTab(tab)}
                 onFilterInventory={(status) => setStatusFilter(status)}
                 onOpenNewItem={handleOpenNewItem}
-                onOpenNewBid={() => setIsNewBidDrawerOpen(true)}
+                onOpenNewBid={() => {
+                  setEditingBid(null);
+                  setIsBidDrawerOpen(true);
+                  setActiveTab('LIVE_BIDS');
+                }}
               />
             )}
 
@@ -217,13 +223,15 @@ export default function App() {
                 onUpdateBidStatus={handleUpdateBidStatus}
                 onAdjustHammerPrice={handleAdjustHammerPrice}
                 onDeleteBid={handleDeleteBid}
-                onSaveNewBid={handleSaveBid}
+                onSaveBid={handleSaveBid}
                 onNavigateToStock={() => {
                   setStatusFilter('IN_STOCK');
                   setActiveTab('INVENTORY');
                 }}
-                isNewBidDrawerOpen={isNewBidDrawerOpen}
-                setIsNewBidDrawerOpen={setIsNewBidDrawerOpen}
+                isBidDrawerOpen={isBidDrawerOpen}
+                setIsBidDrawerOpen={setIsBidDrawerOpen}
+                editingBid={editingBid}
+                setEditingBid={setEditingBid}
               />
             )}
 

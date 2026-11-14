@@ -10,8 +10,9 @@ import {
   Trash2,
   PackageCheck,
   Check,
+  Pencil,
 } from 'lucide-react';
-import { NewBidDrawer } from './NewBidDrawer';
+import { BidDrawer } from './BidDrawer';
 
 interface LiveBidsScreenProps {
   bids: Bid[];
@@ -19,10 +20,12 @@ interface LiveBidsScreenProps {
   onUpdateBidStatus: (id: string, status: BidStatus) => Promise<void>;
   onAdjustHammerPrice: (id: string, newPrice: number) => Promise<void>;
   onDeleteBid: (id: string) => Promise<void>;
-  onSaveNewBid: (bidData: Partial<Bid>) => Promise<void>;
+  onSaveBid: (bidData: Partial<Bid>) => Promise<void>;
   onNavigateToStock: () => void;
-  isNewBidDrawerOpen: boolean;
-  setIsNewBidDrawerOpen: (open: boolean) => void;
+  isBidDrawerOpen: boolean;
+  setIsBidDrawerOpen: (open: boolean) => void;
+  editingBid: Bid | null;
+  setEditingBid: (bid: Bid | null) => void;
 }
 
 export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
@@ -31,10 +34,12 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
   onUpdateBidStatus,
   onAdjustHammerPrice,
   onDeleteBid,
-  onSaveNewBid,
+  onSaveBid,
   onNavigateToStock,
-  isNewBidDrawerOpen,
-  setIsNewBidDrawerOpen,
+  isBidDrawerOpen,
+  setIsBidDrawerOpen,
+  editingBid,
+  setEditingBid,
 }) => {
   const [filter, setFilter] = useState<'ACTIVE' | 'WON' | 'LOST' | 'ALL'>('ACTIVE');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -71,6 +76,16 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
   const handleStepPrice = async (bid: Bid, delta: number) => {
     const newPrice = Math.max(0, (bid.hammerPrice || 0) + delta);
     await onAdjustHammerPrice(bid.id, newPrice);
+  };
+
+  const handleOpenNewBid = () => {
+    setEditingBid(null);
+    setIsBidDrawerOpen(true);
+  };
+
+  const handleOpenEditBid = (bid: Bid) => {
+    setEditingBid(bid);
+    setIsBidDrawerOpen(true);
   };
 
   return (
@@ -117,7 +132,7 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
 
       {/* 2. Prominent Clean New Bid Action Card */}
       <button
-        onClick={() => setIsNewBidDrawerOpen(true)}
+        onClick={handleOpenNewBid}
         className="w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition active:scale-[0.99] shadow-sm min-h-[44px]"
       >
         <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -130,7 +145,7 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
           <Gavel className="w-10 h-10 mx-auto text-slate-600" />
           <div className="text-xs">No {filter.toLowerCase()} bids recorded.</div>
           <button
-            onClick={() => setIsNewBidDrawerOpen(true)}
+            onClick={handleOpenNewBid}
             className="px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-xl shadow inline-flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" /> Track New Auction Bid
@@ -154,11 +169,17 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
                     : 'bg-slate-900/50 border-slate-800/80 opacity-80'
                 }`}
               >
-                {/* Header: Lot Name & Status Badge */}
+                {/* Header: Lot Name & Status Badge (Clickable to Edit) */}
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-bold text-white truncate">{bid.name}</h4>
+                  <div
+                    className="min-w-0 flex-1 cursor-pointer group"
+                    onClick={() => handleOpenEditBid(bid)}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-xs font-bold text-white truncate group-hover:text-amber-400 transition">
+                        {bid.name}
+                      </h4>
+                      <Pencil className="w-3 h-3 text-slate-500 group-hover:text-amber-400 transition flex-shrink-0" />
                     </div>
                     {bid.notes && (
                       <p className="text-[10px] text-slate-400 mt-0.5 truncate">{bid.notes}</p>
@@ -178,8 +199,11 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
                   </span>
                 </div>
 
-                {/* Primary Financial Ledger */}
-                <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 grid grid-cols-3 gap-2 text-center font-mono">
+                {/* Primary Financial Ledger (Clickable to Edit) */}
+                <div
+                  className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 grid grid-cols-3 gap-2 text-center font-mono cursor-pointer hover:border-slate-700 transition"
+                  onClick={() => handleOpenEditBid(bid)}
+                >
                   <div>
                     <div className="text-[9px] text-slate-400">Current Hammer</div>
                     <div className="text-sm font-black text-white mt-0.5">
@@ -211,7 +235,7 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
                 {isActive && (
                   <div className="space-y-1.5 pt-1">
                     <div className="text-[10px] text-slate-400 flex items-center justify-between font-mono">
-                      <span>Quick Stepper (+12% Fee + 15% VAT included)</span>
+                      <span>Quick Stepper (+{bid.buyerFeePercent}% Fee + {bid.vatPercent}% VAT)</span>
                       <span>Resale: R{bid.expectedSalePrice || 0}</span>
                     </div>
 
@@ -252,15 +276,25 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
 
                 {/* Action Buttons Row */}
                 <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
-                  <button
-                    onClick={() => {
-                      if (confirm(`Delete bid "${bid.name}"?`)) onDeleteBid(bid.id);
-                    }}
-                    className="p-1.5 text-slate-500 hover:text-rose-400 transition"
-                    title="Delete bid"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleOpenEditBid(bid)}
+                      className="py-1 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold transition flex items-center gap-1 active:scale-95"
+                    >
+                      <Pencil className="w-3 h-3 text-slate-400" />
+                      <span>Edit</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete bid "${bid.name}"?`)) onDeleteBid(bid.id);
+                      }}
+                      className="p-1.5 text-slate-500 hover:text-rose-400 transition"
+                      title="Delete bid"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
 
                   <div className="flex items-center gap-2">
                     {isActive && (
@@ -310,12 +344,17 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
         </div>
       )}
 
-      {/* New Bid Drawer */}
-      <NewBidDrawer
-        isOpen={isNewBidDrawerOpen}
-        onClose={() => setIsNewBidDrawerOpen(false)}
+      {/* Unified Bid Drawer (New & Edit) */}
+      <BidDrawer
+        isOpen={isBidDrawerOpen}
+        onClose={() => {
+          setIsBidDrawerOpen(false);
+          setEditingBid(null);
+        }}
+        bid={editingBid}
         settings={settings}
-        onSaveBid={onSaveNewBid}
+        onSaveBid={onSaveBid}
+        onDeleteBid={onDeleteBid}
       />
     </div>
   );
