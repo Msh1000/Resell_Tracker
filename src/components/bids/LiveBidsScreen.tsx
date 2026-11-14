@@ -54,9 +54,22 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
     return b.status === filter;
   });
 
-  const activeCount = bids.filter((b) => b.status === 'ACTIVE').length;
-  const wonCount = bids.filter((b) => b.status === 'WON').length;
-  const lostCount = bids.filter((b) => b.status === 'LOST').length;
+  const activeBids = bids.filter((b) => b.status === 'ACTIVE');
+  const wonBids = bids.filter((b) => b.status === 'WON');
+  const lostBids = bids.filter((b) => b.status === 'LOST');
+
+  const activeCount = activeBids.length;
+  const wonCount = wonBids.length;
+  const lostCount = lostBids.length;
+
+  // Total cost calculations for active and won bids
+  const activeTotalLanded = activeBids.reduce((acc, b) => acc + (b.calculatedLandedCost || 0), 0);
+  const activeTotalHammer = activeBids.reduce((acc, b) => acc + (b.hammerPrice || 0), 0);
+
+  const wonTotalLanded = wonBids.reduce((acc, b) => acc + (b.calculatedLandedCost || 0), 0);
+  const wonTotalHammer = wonBids.reduce((acc, b) => acc + (b.hammerPrice || 0), 0);
+
+  const totalCombinedLanded = activeTotalLanded + wonTotalLanded;
 
   const handleWin = async (bid: Bid) => {
     await onUpdateBidStatus(bid.id, 'WON');
@@ -98,7 +111,71 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
         </div>
       )}
 
-      {/* 1. Full-width Filter Tabs */}
+      {/* 1. Total Cost Summary Card (Active & Won Bids) */}
+      <div className="p-3.5 bg-gradient-to-b from-slate-900 to-slate-925 rounded-2xl border border-slate-800 shadow-sm space-y-2.5">
+        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+          <span>Auction Capital Outlay</span>
+          <span className="font-mono text-[11px] text-slate-300">
+            Total: <span className="text-white font-bold">{formatZAR(totalCombinedLanded)}</span>
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5 font-mono">
+          {/* Active Bids Outlay */}
+          <div
+            onClick={() => setFilter('ACTIVE')}
+            className={`p-2.5 rounded-xl border transition cursor-pointer active:scale-95 ${
+              filter === 'ACTIVE'
+                ? 'bg-amber-500/15 border-amber-500/40'
+                : 'bg-slate-950/80 border-slate-800/80 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1 font-sans">
+              <span className="flex items-center gap-1.5 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Active Bids
+              </span>
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-300 font-mono">
+                {activeCount}
+              </span>
+            </div>
+            <div className="text-base font-black text-amber-400">
+              {formatZAR(activeTotalLanded)}
+            </div>
+            <div className="text-[9px] text-slate-500 mt-0.5">
+              Hammer: {formatZAR(activeTotalHammer)}
+            </div>
+          </div>
+
+          {/* Won Lots Outlay */}
+          <div
+            onClick={() => setFilter('WON')}
+            className={`p-2.5 rounded-xl border transition cursor-pointer active:scale-95 ${
+              filter === 'WON'
+                ? 'bg-emerald-500/15 border-emerald-500/40'
+                : 'bg-slate-950/80 border-slate-800/80 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1 font-sans">
+              <span className="flex items-center gap-1.5 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Won Lots
+              </span>
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 font-mono">
+                {wonCount}
+              </span>
+            </div>
+            <div className="text-base font-black text-emerald-400">
+              {formatZAR(wonTotalLanded)}
+            </div>
+            <div className="text-[9px] text-slate-500 mt-0.5">
+              Hammer: {formatZAR(wonTotalHammer)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Full-width Filter Tabs */}
       <div className="flex gap-1.5 overflow-x-auto pb-0.5 text-xs font-semibold no-scrollbar">
         {(['ACTIVE', 'WON', 'LOST', 'ALL'] as const).map((st) => {
           const isActive = filter === st;
@@ -130,7 +207,7 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
         })}
       </div>
 
-      {/* 2. Prominent Clean New Bid Action Card */}
+      {/* 3. Prominent Clean New Bid Action Card */}
       <button
         onClick={handleOpenNewBid}
         className="w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition active:scale-[0.99] shadow-sm min-h-[44px]"
@@ -139,7 +216,7 @@ export const LiveBidsScreen: React.FC<LiveBidsScreenProps> = ({
         <span>Track New Auction Lot</span>
       </button>
 
-      {/* 3. Bids List */}
+      {/* 4. Bids List */}
       {filteredBids.length === 0 ? (
         <div className="py-12 text-center text-slate-500 space-y-3 bg-slate-900/40 rounded-2xl border border-slate-800/60 p-6">
           <Gavel className="w-10 h-10 mx-auto text-slate-600" />
